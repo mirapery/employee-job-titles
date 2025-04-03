@@ -2,10 +2,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,7 +16,8 @@ public class JobController {
     @FXML private Label title, error_label;
     @FXML private ComboBox<String> languageSelector;
     @FXML private ListView<String> job_titles;
-    @FXML private Button fetch_button;
+    @FXML private Button fetch_button, add_button;
+    @FXML private TextField key_field, translation_field;
 
     private static final Map<String, Locale> LANGUAGE_MAP = new LinkedHashMap<>();
 
@@ -107,10 +105,47 @@ public class JobController {
             while (resultSet.next()) {
                 String keyName = resultSet.getString("Key_name");
                 String translationText = resultSet.getString("translation_text");
-                job_titles.getItems().add(translationText);
+                job_titles.getItems().add(keyName + ": " + translationText);
             }
         } catch (Exception e) {
+            error_label.setText(Main.bundle.getString("fetch.error"));
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void addJobTitle() {
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                System.out.println("Sorry, unable to find config.properties");
+                return;
+            }
+            properties.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        String dbUsername = properties.getProperty("db.username");
+        String dbPassword = properties.getProperty("db.password");
+
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/otp2", dbUsername, dbPassword);
+            String q = "INSERT INTO translations(Key_name, Language_code, translation_text) VALUES (?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(q);
+            statement.setString(1, key_field.getText());
+            statement.setString(2, Main.currentLocale.getLanguage());
+            statement.setString(3, translation_field.getText());
+            int rowsInserted = statement.executeUpdate();
+
+            searchJobTitles();
+            key_field.setText("");
+            translation_field.setText("");
+        } catch (Exception e) {
+            error_label.setText(Main.bundle.getString("add.error"));
+            e.printStackTrace();
+        }
+
+
     }
 }

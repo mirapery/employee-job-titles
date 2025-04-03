@@ -4,17 +4,18 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="JobController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="486.0" prefWidth="491.0" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JobController">
 
    <Label fx:id="title" text="%title">
       <font>
-         <Font size="24.0"/>
+         <Font size="24.0" />
       </font>
    </Label>
-   <ComboBox fx:id="languageSelector" prefWidth="150.0"/>
-   <ListView fx:id="job_titles" prefHeight="200.0" prefWidth="200.0"/>
-   <Button fx:id="fetch_button" mnemonicParsing="false" text="%button" onAction="#searchJobTitles"/>
-   <Label fx:id="error_label"/>
+   <ComboBox fx:id="languageSelector" prefWidth="150.0" />
+   <ListView fx:id="job_titles" prefHeight="200.0" prefWidth="200.0" />
+   <Button fx:id="fetch_button" mnemonicParsing="false" onAction="#searchJobTitles" text="%button.search" />
+   <TextField fx:id="key_field" promptText="%key" />
+   <TextField fx:id="translation_field" promptText="%translation" />
+   <Button fx:id="add_button" mnemonicParsing="false" onAction="#addJobTitle" text="%button.add" />
+   <Label fx:id="error_label" />
 </VBox>
