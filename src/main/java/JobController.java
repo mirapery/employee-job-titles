@@ -9,8 +9,10 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
+
 
 public class JobController {
 
@@ -80,8 +82,22 @@ public class JobController {
 
     @FXML
     private void searchJobTitles() {
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                System.out.println("Sorry, unable to find config.properties");
+                return;
+            }
+            properties.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        String dbUsername = properties.getProperty("db.username");
+        String dbPassword = properties.getProperty("db.password");
+
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/otp2", "jobuser", "jobz");
+            Connection connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/otp2", dbUsername, dbPassword);
             String q = "SELECT Key_name, translation_text FROM translations WHERE Language_code = ?";
             PreparedStatement statement = connection.prepareStatement(q);
             statement.setString(1, Main.currentLocale.getLanguage());
